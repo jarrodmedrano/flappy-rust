@@ -143,9 +143,21 @@ impl State {
 
         self.player.render(ctx);
         ctx.print(0, 0, "Press SPACE to flap.");
+        ctx.print(0, 1, &format!("Score: {}", self.score));
+
+        // renders obstacle to the screen
+        self.obstacle.render(ctx, self.player.x);
+
+        // adds score if player passes an obstacle
+        if self.player.x > self.obstacle.x {
+            self.score += 1;
+            self.obstacle = Obstacle::new(
+                self.player.x + SCREEN_WIDTH, self.score
+            )
+        }
 
         //if you fall off screen you die
-        if self.player.y > SCREEN_HEIGHT {
+        if self.player.y > SCREEN_HEIGHT || self.obstacle.hit_obstacle(&self.player) {
             self.mode = GameMode::End;
         }
     }
