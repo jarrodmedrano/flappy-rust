@@ -13,7 +13,9 @@ enum GameMode {
 struct State {
     player: Player,
     frame_time: f32,
+    obstacle: Obstacle,
     mode: GameMode,
+    score: i32
 }
 
 struct Player {
@@ -119,7 +121,9 @@ impl State {
         State {
             player: Player::new(5, 25),
             frame_time: 0.0,
-            mode: GameMode::Menu
+            obstacle: Obstacle::new(SCREEN_WIDTH, 0),
+            mode: GameMode::Menu,
+            score: 0,
         }
     }
 
