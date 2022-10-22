@@ -22,6 +22,62 @@ struct Player {
     velocity: f32
 }
 
+struct Obstacle {
+    x: i32,
+    gap_y: i32,
+    size: i32
+}
+
+impl Obstacle {
+    fn new(x: i32, score: i32) -> Self {
+        //place the obstacle at a random position
+        let mut random = RandomNumberGenerator::new();
+        Obstacle {
+            x,
+            //y value between 10 and 29
+            gap_y: random.range(10,40),
+            //walls close in as player progresses maximum of 20 size minus score
+            size: i32::max(2,20 - score)
+        }
+    }
+
+    fn render(&mut self, ctx: &mut BTerm, player_x : i32) {
+        let screen_x = self.x - player_x;
+        let half_size = self.size / 2;
+        // Draw the top half of the obstacle
+        for y in 0..self.gap_y - half_size {
+            ctx.set(
+                screen_x,
+                y,
+                RED,
+                BLACK,
+                to_cp437('|'),
+            )
+        }
+        // Draw bottom half of the obstacle
+        for y in self.gap_y + half_size..SCREEN_HEIGHT {
+            ctx.set(
+                screen_x,
+                y,
+                RED,
+                BLACK,
+                to_cp437('|'),
+            )
+        }
+    }
+
+    // receives a borrowed reference to the player
+    fn hit_obstacle(&self, player: &Player) -> bool {
+        let half_size = self.size / 2;
+        // checks if the player’s x coordinate matches that of the obstacle
+        let does_x_match = player.x == self.x;
+        //  compares the player’s y coordinate with the obstacle’s upper gap
+        let player_above_gap = player.y < self.gap_y - half_size;
+        let player_below_gap : bool = player.y > self.gap_y + half_size;
+        does_x_match && (player_above_gap || player_below_gap)
+    }
+}
+
 impl Player {
     fn new(x: i32, y: i32) -> Self {
         Player {
